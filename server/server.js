@@ -67,7 +67,18 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {
-        if (players.has(player.id)) players.delete(player.id);
+        if (players.has(player.id)) {
+            if (player.room) {
+                player.room.players.forEach(player => {
+                    player.role = null;
+                    sockets.get(player.id).emit('redirectLeaveRoom');
+                });
+                rooms.delete(player.room.name);
+                players.forEach(player => sockets.get(player.id).emit('roomList', [...rooms.keys()]));
+                console.log('Player "' + player.name + '" leaved and deleted room "' + player.room.name + '"');
+            }
+            players.delete(player.id);
+        }
         console.log('Disconnect : ' + socket.id);
     });
 });
