@@ -88,6 +88,7 @@ var createRoom = () => {
 }
 
 var joinRoom = (lastMenu, roomName) => {
+    unselectRoom();
     if (roomName) {
         document.getElementById('roomTitle').innerHTML = roomName;
         swap(lastMenu, 'roomMenu');
@@ -97,6 +98,7 @@ var joinRoom = (lastMenu, roomName) => {
 }
 
 var leaveRoom = () => {
+    unselectRoom();
     swap('roomMenu', 'roomsMenu');
     global.socket.emit('leaveRoom', global.roomName);
 }
