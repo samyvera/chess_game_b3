@@ -35,20 +35,10 @@
                     <th>Name</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr id="room-0" onclick="selectRoom(0);">
-                    <td>Test Room 0</td>
-                </tr>
-                <tr id="room-1" onclick="selectRoom(1);">
-                    <td>Test Room 1</td>
-                </tr>
-                <tr id="room-2" onclick="selectRoom(2);">
-                    <td>Test Room 2</td>
-                </tr>
+            <tbody id="roomsTableBody">
             </tbody>
         </table>
         <div id="roomsOptions">
-            <button onclick="refresh();">Refresh</button>
             <button id="joinRoom" class="unselectable" onclick="joinRoom('roomsMenu', global.selectedRoom);">Join Room</button>
             <button onclick="createRoomMenu();">Create Room</button>
         </div>
@@ -60,14 +50,14 @@
         <p id="createTitle">Create Room</p>
         <input type="text" placeholder="Enter room name" id="roomNameInput" maxlength="35" />
         <button id="createButton" onclick="createRoom();">Create</button>
-        <button id="cancelButton" onclick="cancelMenu('createMenu');">Cancel</button>
+        <button id="cancelButton" onclick="joinLobby('createMenu');">Cancel</button>
     </div>
 
     <!-- Room -->
 
     <div id="roomMenu">
         <p id="roomTitle"></p>
-        <button id="leaveButton" onclick="cancelMenu('roomMenu');">Leave</button>
+        <button id="leaveButton" onclick="leaveRoom();">Leave</button>
         <table id="spectators"></table>
         <table id="player1"></table>
         <table id="player2"></table>

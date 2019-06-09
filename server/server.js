@@ -22,35 +22,47 @@ io.on('connection', socket => {
             sockets.set(player.id, socket);
             players.set(player.id, player);
             player.name = name;
-            socket.emit('welcome', name, getRoomList());
+            socket.emit('welcome', name, [...rooms.keys()]);
             console.log('Player "' + socket.id + '" joined as "' + name + '"');
         }
     });
 
     socket.on('createRoom', name => {
-        if (getRoomList().includes(name) || player.room) socket.disconnect();
+        if (rooms.has(name) || player.room) socket.emit('errorMessage', "Error : Can't create room");
         else {
             player.room = new Room(name);
             rooms.set(name, player.room);
             socket.emit('redirectJoinRoom', name);
+            players.forEach(player => sockets.get(player.id).emit('roomList', [...rooms.keys()]));
             console.log('Player "' + player.name + '" created room "' + name + '"');
         }
     });
 
     socket.on('joinRoom', name => {
-        if (player.role || !getRoomList().includes(name)) socket.disconnect();
+        if (player.role || !rooms.has(name)) socket.disconnect();
         else {
             player.role = 'spectator';
-            rooms.get(name).spectators.push(player);
+            rooms.get(name).players.set(player.id, player);
             console.log('Player "' + player.name + '" joined room "' + name + '"');
         }
     });
 
     socket.on('leaveRoom', name => {
-        if (!user.room || !rooms.includes(name)) socket.disconnect();
+        if (!rooms.has(name) || !rooms.get(name).players.has(player.id)) socket.disconnect();
         else {
-            user.room = null;
-            console.log('Player "' + user.name + '" leaved room "' + name + '"');
+            rooms.get(name).players.delete(player.id);
+            player.role = null;
+            if (player.room && player.room.name === rooms.get(name).name) {
+                player.room.players.forEach(player => {
+                    player.role = null;
+                    sockets.get(player.id).emit('redirectLeaveRoom');
+                });
+                player.room = null;
+                rooms.delete(name);
+                players.forEach(player => sockets.get(player.id).emit('roomList', [...rooms.keys()]));
+                console.log('Player "' + player.name + '" leaved and deleted room "' + name + '"');
+            }
+            else console.log('Player "' + player.name + '" leaved room "' + name + '"');
         }
     });
 
@@ -59,11 +71,5 @@ io.on('connection', socket => {
         console.log('Disconnect : ' + socket.id);
     });
 });
-
-var getRoomList = () => {
-    var roomList = [];
-    rooms.forEach(room => roomList.push(room.name));
-    return roomList;
-}
 
 http.listen(3000);

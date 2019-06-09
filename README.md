@@ -28,4 +28,4 @@ Open your web browser to `localhost:3000`
 - Quick join and play (no sign-ups)
 - Nicknames
 - Create/Join rooms
-- ~~Spectate games~~
+- Spectate games
