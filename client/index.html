@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>CGB3 - Play chess online !</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/vector2D.js"></script>
+    <script src="js/window.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+
+    <!-- Start -->
+
+    <div id="startMenu">
+        <p id="startTitle">CGB3</p>
+        <input type="text" autofocus placeholder="Enter nickname" id="playerNameInput" maxlength="15" />
+        <button id="startButton" onclick="play();">Play</button>
+    </div>
+
+    <!-- Rooms -->
+
+    <div id="roomsMenu">
+        <table id="roomsTable">
+            <caption>Room List</caption>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="room-0" onclick="selectRoom(0);">
+                    <td>Test Room 0</td>
+                </tr>
+                <tr id="room-1" onclick="selectRoom(1);">
+                    <td>Test Room 1</td>
+                </tr>
+                <tr id="room-2" onclick="selectRoom(2);">
+                    <td>Test Room 2</td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="roomsOptions">
+            <button onclick="refresh();">Refresh</button>
+            <button id="joinRoom" class="unselectable" onclick="joinRoom('roomsMenu', global.selectedRoom);">Join Room</button>
+            <button onclick="createRoomMenu();">Create Room</button>
+        </div>
+    </div>
+
+    <!-- Create Room -->
+
+    <div id="createMenu">
+        <p id="createTitle">Create Room</p>
+        <input type="text" placeholder="Enter room name" id="roomNameInput" maxlength="35" />
+        <button id="createButton" onclick="createRoom();">Create</button>
+        <button id="cancelButton" onclick="cancelMenu('createMenu');">Cancel</button>
+    </div>
+
+    <!-- Room -->
+
+    <div id="roomMenu">
+        <p id="roomTitle"></p>
+        <button id="leaveButton" onclick="cancelMenu('roomMenu');">Leave</button>
+        <table id="spectators"></table>
+        <table id="player1"></table>
+        <table id="player2"></table>
+        <button id="startGameButton">Start game</button>
+    </div>
+
+</body>
+
+</html>

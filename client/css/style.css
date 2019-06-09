@@ -1,0 +1,258 @@
+@font-face {
+  font-family : "rcr";
+  src         : url("../font/RCR.ttf");
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  background-image: url('../img/background.png');
+  box-shadow: inset 0px 0px 32px 0px #000;
+}
+
+/* Start */
+
+#startMenu {
+  width: 146px;
+  margin: auto;
+  padding: 4px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #004;
+  box-shadow: 0px 0px 16px 0px #000;
+  border-radius: 8px;
+  border: 1px solid #fff;
+}
+
+#startTitle {
+  width: 100%;
+  margin: 4px auto;
+  color: #fff;
+  text-align: center;
+}
+
+#startMenu input {
+  width: 128px;
+  margin: 4px auto;
+  padding: 8px;
+  border: none;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  color: #fff;
+  background: #000;
+}
+#startMenu input:focus {
+  outline: none;
+}
+
+#startButton {
+  width: 128px;
+  margin: 4px auto;
+  padding: 4px 0;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background-color: #448;
+  transition: .3s;
+  cursor: pointer;
+}
+#startButton:hover {
+  background-color: #88f;
+  text-shadow: 0px 0px 4px #000;
+}
+#startButton:focus {
+  outline: none;
+}
+
+/* Rooms */
+
+#roomsMenu {
+  width: 512px;
+  height: 512px;
+  margin: auto;
+  padding: 4px 8px;
+  display: none;
+  background-color: #004;
+  box-shadow: 0px 0px 16px 0px #000;
+  border-radius: 8px;
+  border: 1px solid #fff;
+}
+
+/* Table */
+
+#roomsTable {
+  width: 368px;
+  height: 504px;
+  margin: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  color: #fff;
+}
+#roomsTable caption {
+  width: 100%;
+  height: 18px;
+  padding: 4px 0;
+  border-bottom: 1px solid #fff;
+}
+#roomsTable thead {
+  width: 100%;
+  height: 28px;
+  padding: 4px 0;
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #fff;
+}
+#roomsTable tbody {
+  width: 100%;
+  height: 432px;
+  padding: 4px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#roomsTable tr {
+  width: 360px;
+  height: 20px;
+  padding: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #004;
+}
+#roomsTable tbody tr {
+  cursor: pointer;
+}
+#roomsTable tbody tr:hover {
+  background-color: #448;
+}
+#roomsTable tbody tr.selected {
+  background-color: #88f;
+  text-shadow: 0px 0px 4px #000;
+}
+
+/* Options */
+
+#roomsOptions {
+  width: 128px;
+  margin: 4px;
+}
+
+#roomsOptions button {
+  width: 128px;
+  margin: 4px auto;
+  padding: 4px 0;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background-color: #448;
+  transition: .3s;
+  cursor: pointer;
+}
+#roomsOptions button:hover {
+  background-color: #88f;
+  text-shadow: 0px 0px 4px #000;
+}
+#roomsOptions button:focus {
+  outline: none;
+}
+
+#roomsOptions button.unselectable {
+  background-color: #888;
+  text-shadow: 0px 0px 4px #000;
+}
+
+/* Create Room */
+
+#createMenu {
+  width: 246px;
+  margin: auto;
+  padding: 4px 8px;
+  display: none;
+  flex-wrap: wrap;
+  background-color: #004;
+  box-shadow: 0px 0px 16px 0px #000;
+  border-radius: 8px;
+  border: 1px solid #fff;
+}
+
+#createTitle {
+  width: 100%;
+  margin: 4px auto;
+  color: #fff;
+  text-align: center;
+}
+
+#createMenu input {
+  width: 228px;
+  margin: 4px auto;
+  padding: 8px;
+  border: none;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  color: #fff;
+  background: #000;
+}
+#createMenu input:focus {
+  outline: none;
+}
+
+#createMenu button {
+  width: 228px;
+  margin: 4px auto;
+  padding: 4px 0;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background-color: #448;
+  transition: .3s;
+  cursor: pointer;
+}
+#createMenu button:hover {
+  background-color: #88f;
+  text-shadow: 0px 0px 4px #000;
+}
+#createMenu button:focus {
+  outline: none;
+}
+
+/* Room */
+
+#roomMenu {
+  width: 512px;
+  height: 512px;
+  margin: auto;
+  padding: 4px;
+  display: none;
+  flex-wrap: wrap;
+  background-color: #004;
+  box-shadow: 0px 0px 16px 0px #000;
+  border-radius: 8px;
+  border: 1px solid #fff;
+}
+
+#roomTitle {
+  width: 100%;
+  margin: 4px auto;
+  color: #fff;
+  text-align: center;
+}
+
+#roomMenu button {
+  width: 228px;
+  margin: 4px auto;
+  padding: 4px 0;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background-color: #448;
+  transition: .3s;
+  cursor: pointer;
+}
+#roomMenu button:hover {
+  background-color: #88f;
+  text-shadow: 0px 0px 4px #000;
+}
+#roomMenu button:focus {
+  outline: none;
+}
