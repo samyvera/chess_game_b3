@@ -14,6 +14,7 @@ var setupSocket = socket => {
 
     socket.on("roomList", roomList => {
         global.roomList = roomList;
+        unselectRoom();
         refresh();
     });
 
