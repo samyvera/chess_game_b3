@@ -82,6 +82,26 @@ var refreshRoom = () => {
         tr.innerHTML = spectator;
         spectatorsBody.appendChild(tr);
     });
+
+    var player1Body = document.getElementById('player1Body');
+    player1Body.innerHTML = "";
+    if (global.player1) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = global.player1.name;
+        player1Body.appendChild(tr);
+    }
+
+    var player2Body = document.getElementById('player2Body');
+    player2Body.innerHTML = "";
+    if (global.player2) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = global.player2.name;
+        player2Body.appendChild(tr);
+    }
+    
+    console.log(global.player1);
+    console.log(global.player2);
+    console.table(global.spectators);
 }
 
 var joinLobby = lastRoom => {
@@ -111,6 +131,13 @@ var createRoom = () => {
     }
 }
 
+var changeRole = role => {
+    if ((role === 'player1' && !global.player1) || (role === 'player2' && !global.player2) ||
+        (role === 'spectator' && !global.spectators.includes(global.playerName))) {
+        global.socket.emit('changeRole', {roomName:global.roomName, newRole:role});
+    }
+}
+
 var joinRoom = (lastMenu, roomName) => {
     unselectRoom();
     if (roomName) {
@@ -118,7 +145,7 @@ var joinRoom = (lastMenu, roomName) => {
         swap(lastMenu, 'roomMenu');
         global.roomName = roomName;
         global.socket.emit('joinRoom', roomName);
-        global.socket.emit('changeRole', {roomName:roomName, newRole:'spectator'});
+        changeRole('spectator');
     }
 }
 

@@ -81,8 +81,12 @@ io.on('connection', socket => {
         if (!rooms.has(p.roomName) || (p.newRole !== 'spectator' && p.newRole !== 'player1' && p.newRole !== 'player2') ||
             (p.newRole === 'player1' && rooms.get(p.roomName).roles.has('player1')) || (p.newRole === 'player2' && rooms.get(p.roomName).roles.has('player2'))) socket.disconnect();
         else {
-            player.role = p.newRole;
             var room = rooms.get(p.roomName);
+            if (player.role === 'player1') room.roles.delete('player1');
+            if (player.role === 'player2') room.roles.delete('player2');
+            if (player.role === 'spectator') room.roles.set('spectator', room.roles.get('spectator').filter(p => p.id !== player.id));
+
+            player.role = p.newRole;
             if (p.newRole === 'player1') room.roles.set('player1', player);
             else if (p.newRole === 'player2') room.roles.set('player2', player);
             else if (p.newRole === 'spectator') room.roles.get('spectator').push(player);
@@ -97,22 +101,24 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {
-        var room;
+        var room = null;
         rooms.forEach(r => r.players.forEach(p => {
             if (p.id === player.id) room = r;
         }));
 
-        room.players.delete(player.id);
-        if (player.role === 'player1' || player.role === 'player2') room.roles.delete(player.role);
-        else if (player.role === 'spectator') room.roles.set(player.role, room.roles.get(player.role).filter(p => p.id !== player.id));
-        player.role = null;
-        var spectators = [];
-        room.roles.get('spectator').forEach(spectator => spectators.push(spectator.name));
-        room.players.forEach(player => sockets.get(player.id).emit('roomInfos', {
-            player1: room.roles.get('player1'),
-            player2: room.roles.get('player2'),
-            spectators: spectators
-        }));
+        if (room) {
+            room.players.delete(player.id);
+            if (player.role === 'player1' || player.role === 'player2') room.roles.delete(player.role);
+            else if (player.role === 'spectator') room.roles.set(player.role, room.roles.get(player.role).filter(p => p.id !== player.id));
+            player.role = null;
+            var spectators = [];
+            room.roles.get('spectator').forEach(spectator => spectators.push(spectator.name));
+            room.players.forEach(player => sockets.get(player.id).emit('roomInfos', {
+                player1: room.roles.get('player1'),
+                player2: room.roles.get('player2'),
+                spectators: spectators
+            }));
+        }
         
         if (players.has(player.id)) {
             if (player.room) {
