@@ -10,12 +10,25 @@ var setupSocket = socket => {
 
     socket.on("redirectJoinRoom", roomName => joinRoom('createMenu', roomName));
 
-    socket.on("redirectLeaveRoom", () => joinLobby('roomMenu'));
+    socket.on("redirectLeaveRoom", () => { 
+        global.roomName = null;
+        global.player1 = null;
+        global.player2 = null;
+        global.spectators = null;
+        joinLobby('roomMenu');
+    });
 
     socket.on("roomList", roomList => {
         global.roomList = roomList;
         unselectRoom();
-        refresh();
+        refreshRooms();
+    });
+
+    socket.on("roomInfos", info => {
+        global.player1 = info.player1;
+        global.player2 = info.player2;
+        global.spectators = info.spectators;
+        refreshRoom();
     });
 
     socket.on("connect_failed", () => {
@@ -47,7 +60,7 @@ var unselectRoom = () => {
     global.selectedRoom = null;
 }
 
-var refresh = () => {
+var refreshRooms = () => {
     var tableBody = document.getElementById('roomsTableBody');
     tableBody.innerHTML = "";
     global.roomList.forEach(room => {
@@ -57,14 +70,24 @@ var refresh = () => {
         var td = document.createElement("td");
         td.innerHTML = room;
         tr.appendChild(td);
-        document.getElementById('roomsTableBody').appendChild(tr);
+        tableBody.appendChild(tr);
+    });
+}
+
+var refreshRoom = () => {
+    var spectatorsBody = document.getElementById('spectatorsBody');
+    spectatorsBody.innerHTML = "";
+    global.spectators.forEach(spectator => {
+        var tr = document.createElement("tr");
+        tr.innerHTML = spectator;
+        spectatorsBody.appendChild(tr);
     });
 }
 
 var joinLobby = lastRoom => {
     unselectRoom();
     swap(lastRoom, 'roomsMenu');
-    refresh();
+    refreshRooms();
 }
 
 var selectRoom = name => {
@@ -95,6 +118,7 @@ var joinRoom = (lastMenu, roomName) => {
         swap(lastMenu, 'roomMenu');
         global.roomName = roomName;
         global.socket.emit('joinRoom', roomName);
+        global.socket.emit('changeRole', {roomName:roomName, newRole:'spectator'});
     }
 }
 
@@ -109,12 +133,3 @@ window.onload = () => {
     setupSocket(socket);
     global.socket = socket;
 }
-
-// var display = new CanvasDisplay();
-
-// var frame = time => {
-//     global.update(keys, socket);
-//     display.drawFrame();
-//     requestAnimationFrame(frame);
-// };
-// requestAnimationFrame(frame);

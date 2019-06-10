@@ -9,6 +9,8 @@ class App {
         this.roomList = [];
         
         this.roomName = null;
-        this.playerList = [];
+        this.player1 = null;
+        this.player2 = null;
+        this.spectators = [];
     }
 }
