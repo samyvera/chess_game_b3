@@ -8,76 +8,11 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/vector2D.js"></script>
-    <script src="js/window.js"></script>
-    <script src="js/global.js"></script>
-    <script src="js/canvas.js"></script>
+    <script src="js/display.js"></script>
     <script src="js/app.js"></script>
 </head>
 
 <body>
-
-    <!-- Start -->
-
-    <div id="startMenu">
-        <p id="startTitle">CGB3</p>
-        <input type="text" autofocus placeholder="Enter nickname" id="playerNameInput" maxlength="15" />
-        <button id="startButton" onclick="play();">Play</button>
-    </div>
-
-    <!-- Rooms -->
-
-    <div id="roomsMenu">
-        <table id="roomsTable">
-            <caption>Room List</caption>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody id="roomsTableBody">
-            </tbody>
-        </table>
-        <div id="roomsOptions">
-            <button id="joinRoom" class="unselectable" onclick="joinRoom('roomsMenu', global.selectedRoom);">Join Room</button>
-            <button onclick="createRoomMenu();">Create Room</button>
-        </div>
-    </div>
-
-    <!-- Create Room -->
-
-    <div id="createMenu">
-        <p id="createTitle">Create Room</p>
-        <input type="text" placeholder="Enter room name" id="roomNameInput" maxlength="35" />
-        <button id="createButton" onclick="createRoom();">Create</button>
-        <button id="cancelButton" onclick="joinLobby('createMenu');">Cancel</button>
-    </div>
-
-    <!-- Room -->
-
-    <div id="roomMenu">
-        <p id="roomTitle"></p>
-        <button id="startGameButton">Start game</button>
-        <div id="tableContainer">
-            <table id="player1">
-                <caption>Player 1</caption>
-                <tbody id="player1Body" onclick="changeRole('player1')">
-                </tbody>
-            </table>
-            <table id="spectators">
-                <caption>Spectators</caption>
-                <tbody id="spectatorsBody" onclick="changeRole('spectator')">
-                </tbody>
-            </table>
-            <table id="player2">
-                <caption>Player 2</caption>
-                <tbody id="player2Body" onclick="changeRole('player2')">
-                </tbody>
-            </table>
-        </div>
-        <button id="leaveButton" onclick="leaveRoom();">Leave</button>
-    </div>
-
 </body>
 
 </html>

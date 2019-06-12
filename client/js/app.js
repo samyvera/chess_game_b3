@@ -1,162 +1,155 @@
-var global = new App();
-
-var setupSocket = socket => {
-    socket.on("welcome", (playerName, roomList) => {
-        global.connected = true;
-        global.playerName = playerName;
-        global.roomList = roomList;
-        joinLobby('startMenu');
-    });
-
-    socket.on("redirectJoinRoom", roomName => joinRoom('createMenu', roomName));
-
-    socket.on("redirectLeaveRoom", () => { 
-        global.roomName = null;
-        global.player1 = null;
-        global.player2 = null;
-        global.spectators = null;
-        joinLobby('roomMenu');
-    });
-
-    socket.on("roomList", roomList => {
-        global.roomList = roomList;
-        unselectRoom();
-        refreshRooms();
-    });
-
-    socket.on("roomInfos", info => {
-        global.player1 = info.player1;
-        global.player2 = info.player2;
-        global.spectators = info.spectators;
-        refreshRoom();
-    });
-
-    socket.on("connect_failed", () => {
-        socket.close();
-        global.connected = false;
-    });
-
-    socket.on("disconnect", () => {
-        socket.close();
-        global.connected = false;
-    });
-
-    socket.on("errorMessage", message => alert(message));
-}
-
-var swap = (oldMenu, newMenu) => {
-    document.getElementById(oldMenu).style.display = 'none';
-    document.getElementById(newMenu).style.display = 'flex';
-}
-
-var play = () => {
-    var playerName = document.getElementById('playerNameInput').value;
-    if (playerName && playerName.length > 0 && playerName.length <= 15) global.socket.emit('join', playerName);
-}
-
-var unselectRoom = () => {
-    document.getElementById('joinRoom').className = 'unselectable';
-    Array.from(document.getElementsByClassName("selected")).forEach(item => item.classList.remove("selected"));
-    global.selectedRoom = null;
-}
-
-var refreshRooms = () => {
-    var tableBody = document.getElementById('roomsTableBody');
-    tableBody.innerHTML = "";
-    global.roomList.forEach(room => {
-        var tr = document.createElement("tr");
-        tr.id = room;
-        tr.onclick = () => selectRoom(room);
-        var td = document.createElement("td");
-        td.innerHTML = room;
-        tr.appendChild(td);
-        tableBody.appendChild(tr);
-    });
-}
-
-var refreshRoom = () => {
-    var spectatorsBody = document.getElementById('spectatorsBody');
-    spectatorsBody.innerHTML = "";
-    global.spectators.forEach(spectator => {
-        var tr = document.createElement("tr");
-        tr.innerHTML = spectator;
-        spectatorsBody.appendChild(tr);
-    });
-
-    var player1Body = document.getElementById('player1Body');
-    player1Body.innerHTML = "";
-    if (global.player1) {
-        var tr = document.createElement("tr");
-        tr.innerHTML = global.player1.name;
-        player1Body.appendChild(tr);
-    }
-
-    var player2Body = document.getElementById('player2Body');
-    player2Body.innerHTML = "";
-    if (global.player2) {
-        var tr = document.createElement("tr");
-        tr.innerHTML = global.player2.name;
-        player2Body.appendChild(tr);
-    }
-    
-    console.log(global.player1);
-    console.log(global.player2);
-    console.table(global.spectators);
-}
-
-var joinLobby = lastRoom => {
-    unselectRoom();
-    swap(lastRoom, 'roomsMenu');
-    refreshRooms();
-}
-
-var selectRoom = name => {
-    unselectRoom();
-    document.getElementById('joinRoom').classList.remove("unselectable");
-    document.getElementById(name).className = 'selected';
-    global.selectedRoom = name;
-}
-
-var createRoomMenu = () => {
-    unselectRoom();
-    swap('roomsMenu', 'createMenu');
-    document.getElementById('roomNameInput').value = global.playerName + "'s room";
-    document.getElementById('roomNameInput').focus();
-}
-
-var createRoom = () => {
-    var roomName = document.getElementById('roomNameInput').value;
-    if (roomName && roomName.length > 0 && roomName.length <= 35) {
-        global.socket.emit('createRoom', roomName);
-    }
-}
-
-var changeRole = role => {
-    if ((role === 'player1' && !global.player1) || (role === 'player2' && !global.player2) ||
-        (role === 'spectator' && !global.spectators.includes(global.playerName))) {
-        global.socket.emit('changeRole', {roomName:global.roomName, newRole:role});
-    }
-}
-
-var joinRoom = (lastMenu, roomName) => {
-    unselectRoom();
-    if (roomName) {
-        document.getElementById('roomTitle').innerHTML = roomName;
-        swap(lastMenu, 'roomMenu');
-        global.roomName = roomName;
-        global.socket.emit('joinRoom', roomName);
-        changeRole('spectator');
-    }
-}
-
-var leaveRoom = () => {
-    unselectRoom();
-    swap('roomMenu', 'roomsMenu');
-    global.socket.emit('leaveRoom', global.roomName);
-}
-
 window.onload = () => {
-    var socket = io();
-    setupSocket(socket);
-    global.socket = socket;
+
+    class Player {
+        constructor(id) {
+            this.id = id;
+            this.name = null;
+            this.rooms = new Array();
+            this.room = {
+                name: null,
+                player1: null,
+                player2: null,
+                spectators: new Array()
+            }
+        }
+    }
+
+    class App {
+        constructor(socket) {
+            this.socket = socket;
+            this.player = new Player(this.socket.id);
+
+            this.display = null;
+            this.selectedRoom = null;
+
+            this.setupSocket = () => {
+                this.socket.on("welcome", (name, rooms) => {
+                    this.player.name = name;
+                    this.player.rooms = rooms;
+                    this.joinLobby('startMenu');
+                });
+        
+                this.socket.on("redirectJoinRoom", name => {
+                    this.joinRoom('createMenu', name);
+                });
+        
+                this.socket.on("redirectLeaveRoom", () => {
+                    this.player.room.name = null;
+                    this.player.room.player1 = null;
+                    this.player.room.player2 = null;
+                    this.player.room.spectators = new Array();
+                    this.joinLobby('roomMenu');
+                });
+        
+                this.socket.on("roomList", rooms => {
+                    this.player.rooms = rooms;
+                    this.unselectRoom();
+                    this.display.refreshRooms();
+                });
+        
+                this.socket.on("roomInfos", info => {
+                    this.player.room.player1 = info.player1;
+                    this.player.room.player2 = info.player2;
+                    this.player.room.spectators = info.spectators;
+                    this.display.refreshRoom();
+                });
+        
+                this.socket.on("connect_failed", () => {
+                    this.socket.close();
+                    alert("Disconnected");
+                });
+        
+                this.socket.on("disconnect", () => {
+                    this.socket.close();
+                    alert("Disconnected");
+                });
+        
+                this.socket.on("errorMessage", message => {
+                    alert(message);
+                });
+            }
+
+            //UTILS
+
+            this.joinLobby = lastRoom => {
+                this.unselectRoom();
+                this.display.swapMenu(lastRoom, 'roomsMenu');
+                this.display.refreshRooms();
+            }
+
+            this.joinRoom = (lastMenu, name) => {
+                this.unselectRoom();
+                if (name) {
+                    this.display.setRoomName(name);
+                    this.display.swapMenu(lastMenu, 'roomMenu');
+                    this.player.room.name = name;
+                    this.socket.emit('joinRoom', name);
+                    this.changeRole('spectator');
+                }
+            }
+
+            //"Start"
+
+            this.submitNickname = () => {
+                var name = this.display.getNickname();
+                if (name && name.length > 0 && name.length <= 15) this.socket.emit('join', name);
+            }
+
+            //"Rooms"
+
+            this.unselectRoom = () => {
+                this.display.unselectRoom();
+                this.selectedRoom = null;
+            }
+
+            this.selectRoom = name => {
+                this.unselectRoom();
+                this.display.changeSelectedRoom(name);
+                this.selectedRoom = name;
+            }
+            
+            this.createRoomMenu = () => {
+                this.unselectRoom();
+                this.display.swapMenu('roomsMenu', 'createMenu');
+                this.display.setAutoRoomName(this.player.name);
+            }
+
+            //"Create Room"
+
+            this.createRoom = () => {
+                var name = this.display.getRoomNameInput();
+                if (name && name.length > 0 && name.length <= 35) {
+                    this.display.showStartGameButton();
+                    this.socket.emit('createRoom', name);
+                }
+            }
+
+            //"Room"
+            
+            this.leaveRoom = () => {
+                this.unselectRoom();
+                this.display.swapMenu('roomMenu', 'roomsMenu');
+                this.display.resetStartGameButton();
+                this.socket.emit('leaveRoom', this.player.room.name);
+            }
+
+            this.changeRole = role => {
+                if ((role === 'player1' && !this.player.room.player1) || (role === 'player2' && !this.player.room.player2) ||
+                    (role === 'spectator' && !this.player.room.spectators.includes(this.player.name))) {
+                    this.socket.emit('changeRole', {
+                        roomName: this.player.room.name,
+                        newRole: role
+                    });
+                }
+            }
+
+            //INIT
+
+            this.setupSocket();
+        }
+    }
+
+    var app = new App(io());
+    var display = new Display(app);
+    app.display = display;
 }

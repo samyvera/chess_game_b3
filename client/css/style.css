@@ -10,7 +10,6 @@ body {
   margin: 0;
   display: flex;
   background-image: url('../img/background.png');
-  box-shadow: inset 0px 0px 32px 0px #000;
 }
 
 /* Start */
@@ -303,4 +302,13 @@ body {
   height: 18px;
   padding: 4px;
   display: flex;
+}
+
+#startGameButtonContainer {
+  width: 100%;
+  display: flex;
+}
+
+#startGameButton {
+  margin: 4px auto;
 }
